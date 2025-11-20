@@ -1,0 +1,13 @@
+{
+  "name": "STGAP1BS Gate Driver",
+  "apiVersion": "1.0.0",
+  "author": "David J. Fiddes",
+  "version": "1.0.0",
+  "description": "Decode SPI communications with STGAP1BS or STGAP1AS gate driver ICs from STMicroelectronics.",
+  "extensions": {
+    "STGAP1BS Gate Driver": {
+      "type": "HighLevelAnalyzer",
+      "entryPoint": "Stgap1bsAnalyzer.Stgap1bsAnalyzer"
+    }
+  }
+}
