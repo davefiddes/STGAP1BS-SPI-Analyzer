@@ -78,8 +78,12 @@ class Stgap1bsAnalyzer(HighLevelAnalyzer):
                 # The next state will be set later
                 register = self.register[chip_index]
                 data = decode_reg_byte(register, frame.data['miso'][0])
-                response += (f" | {REGISTERS[register]['name']} " +
-                             f"read: {data}")
+                if register in REGISTERS:
+                    response += (f" | {REGISTERS[register]['name']} " +
+                                 f"read: {data}")
+                else:
+                    response += (f" | Unknown register {register:02X} " +
+                                 f"read: {data}")
 
             message = ""
             if (self.state[chip_index] == FrameState.COMMAND or
@@ -94,13 +98,19 @@ class Stgap1bsAnalyzer(HighLevelAnalyzer):
                     register = cmd & STGAP1BS_REG_MASK
                     self.register[chip_index] = register
                     self.next_state.append(FrameState.REG_READ)
-                    message = f"Read {REGISTERS[register]['name']}"
+                    if register in REGISTERS:
+                        message = f"Read {REGISTERS[register]['name']}"
+                    else:
+                        message = f"Read unknown register {register:02X}"
 
                 elif cmd & STGAP1BS_CMD_REG_MASK == STGAP1BS_CMD_WRITE_REG:
                     register = cmd & STGAP1BS_REG_MASK
                     self.register[chip_index] = register
                     self.next_state.append(FrameState.REG_WRITE)
-                    message = f"Write {REGISTERS[register]['name']}"
+                    if register in REGISTERS:
+                        message = f"Write {REGISTERS[register]['name']}"
+                    else:
+                        message = f"Write unknown register {register:02X}"
 
                 else:
                     message = f"Error: Unknown command {cmd:02X}"
@@ -109,7 +119,10 @@ class Stgap1bsAnalyzer(HighLevelAnalyzer):
                 self.next_state.append(FrameState.COMMAND)
                 register = self.register[chip_index]
                 data = decode_reg_byte(register, frame.data['mosi'][0])
-                message = f"{REGISTERS[register]['name']} write: {data}"
+                if register in REGISTERS:
+                    message = f"{REGISTERS[register]['name']} write: {data}"
+                else:
+                    message = f"Unknown register {register:02X} write: {data}"
 
             if response:
                 message += response
